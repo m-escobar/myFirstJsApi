@@ -23,7 +23,6 @@ app.listen(3000, function() {
           }
         });
       }
-      console.log(err);
       console.log(data);
     });
   } catch (err) {
