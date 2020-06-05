@@ -7,46 +7,47 @@ router.post('/', (req, res) => {
   let account = req.body;
 
   fs.readFile(global.fileName, 'utf-8', (err, data) => {
-    if (!err) {
-      try {
-        let json = JSON.parse(data);
-        account = { id: json.nextId, ...account};
+    try {
+      if (err) throw err;
 
-        json.nextId++;
-        json.accounts.push(account);
+      let json = JSON.parse(data);
+      account = { id: json.nextId, ...account};
 
-        fs.writeFile(global.fileName, JSON.stringify(json), err => {
-          if (err) {
-            res.status(400).send({ error: err.message });
-          } else {
-            res.send({"new_account": account});
-          }
-        });
+      json.nextId++;
+      json.accounts.push(account);
 
-      } catch (err) {
+      fs.writeFile(global.fileName, JSON.stringify(json), err => {
+        if (err) {
           res.status(400).send({ error: err.message });
+        } else {
+          res.send({"new_account": account});
+        }
+      });
+    } catch {
+        res.status(400).send({ error: err.message });
       }
-    } else {
-      res.status(400).send({ error: 'Error reading file' });
-    }
   });
 });
 
 router.get('/', (_, res) => {
   fs.readFile(global.fileName, 'utf-8', (err, data) => {
-    if (!err) {
+    try {
+      if (err) throw err;
+
       let json = JSON.parse(data);
       delete json.nextId;
       res.send(json);
-    } else {
-      res.status(400).send({ error: err.message});
+    } catch {
+        res.status(400).send({ error: err.message});
     }
   });
 });
 
 router.get('/:id', (req, res) => {
   fs.readFile(global.fileName, 'utf-8', (err, data) => {
-    if (!err) {
+    try {
+      if (err) throw err;
+
       let json = JSON.parse(data);
       const account = json.accounts.find(account => account.id === parseInt(req.params.id, 10));
 
@@ -55,11 +56,32 @@ router.get('/:id', (req, res) => {
       } else {
         res.status(400).send({error: 'Account not found'});
       }
-      
-      
-    } else {
+
+    } catch {
       res.status(400).send({ error: err.message});
-    }
+    };
+  });
+});
+
+router.delete('/:id', (req, res) => {
+  fs.readFile(global.fileName, 'utf-8', (err, data) => {
+    try {
+      if (err) throw err;
+
+      let json = JSON.parse(data);
+      let accounts = json.accounts.filter(account => account.id !== parseInt(req.params.id, 10));
+      json.accounts = accounts;
+
+      fs.writeFile(global.fileName, JSON.stringify(json), err => {
+        if (err) {
+          res.status(400).send({ error: err.message });
+        } else {
+          res.send('account deleted');
+        }
+      });
+    } catch {
+      res.status(400).send({ error: err.message});
+    };
   });
 });
 
