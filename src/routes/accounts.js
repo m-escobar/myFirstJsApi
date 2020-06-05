@@ -85,4 +85,34 @@ router.delete('/:id', (req, res) => {
   });
 });
 
+router.put('/:id', (req, res) => {
+  let account = req.body;
+  const accountId = parseInt(req.params.id, 10);
+
+  fs.readFile(global.fileName, 'utf-8', (err, data) => {
+    try {
+      if (err) throw err;
+
+      let json = JSON.parse(data);
+      let accountIndex = json.accounts.findIndex(account => account.id === accountId);
+      
+      // account.id = accountId;
+      json.accounts[accountIndex].id = accountId;
+      json.accounts[accountIndex].name = account.name;
+      json.accounts[accountIndex].balance = account.balance;
+
+      
+      fs.writeFile(global.fileName, JSON.stringify(json), err => {
+        if (err) {
+          res.status(400).send({ error: err.message });
+        } else {
+          res.send('account updated');
+        }
+      });
+    } catch {
+      res.status(400).send({ error: err.message});
+    };
+  });
+});
+
 module.exports = router;
