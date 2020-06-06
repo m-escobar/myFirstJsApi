@@ -1,8 +1,10 @@
 const express = require('express');
 const fs = require('fs').promises;
-const app = express();
-const accountsRouter = require('./routes/accounts.js');
 const winston = require('winston');
+const cors = require('cors');
+
+const accountsRouter = require('./routes/accounts.js');
+const app = express();
 
 global.fileName = 'accounts.json';
 
@@ -25,6 +27,8 @@ global.logger = winston.createLogger({
 });
 
 app.use(express.json());
+app.use(cors());
+
 app.use('/account', accountsRouter);
 
 app.listen(3000, async () => {
