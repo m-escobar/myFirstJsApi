@@ -18,6 +18,7 @@ router.post('/', async (req, res) => {
     res.send({"new_account": account});
   } catch (err) {
       res.status(400).send({ error: err.message });
+      logger.error(`POST /account - ${err.message}`);
   }
 });
 
@@ -29,6 +30,7 @@ router.get('/', async (_, res) => {
     res.send(json);
     } catch (err) {
         res.status(400).send({ error: err.message});
+        logger.error(`GET /account - ${err.message}`);
     }
 });
 
@@ -42,9 +44,11 @@ router.get('/:id', async (req, res) => {
       res.send(account);
     } else {
       res.status(400).send({error: 'Account not found'});
+      logger.error('GET /account - Account not found');
     }
   } catch {
     res.status(400).send({ error: err.message});
+    logger.error(`GET /account/:id - ${err.message}`);
   };
 });
 
@@ -59,6 +63,7 @@ router.delete('/:id', async (req, res) => {
     res.send('account deleted');
   } catch {
       res.status(400).send({ error: err.message});
+      logger.error(`DELETE /account/:id - ${err.message}`);
     };
 });
 
@@ -79,6 +84,7 @@ router.put('/:id', async (req, res) => {
     res.send('account updated');
     } catch {
       res.status(400).send({ error: err.message});
+      logger.error(`PUT /account/:id - ${err.message}`);
     };
 });
 
